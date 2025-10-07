@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en" translate="no">
 <head>
@@ -17,7 +20,7 @@
 body {height:100vh;margin:0;padding:0;overflow:hidden;background-color:#fafafa;}
 #player-app-volumewrapper, #player-app-buttonvolumeoff, #player-app-buttonvolumeon,
 #player-app-textvolumeend, #player-app-iconlive, #player-app-buttonanalyzer {display:none;}
-/* Mantener aquí el resto de tu CSS original */
+/* Mantener tu CSS original del loader, sidebar y player */
 </style>
 </head>
 <body oncontextmenu="return false">
@@ -75,13 +78,6 @@ $(document).ready(function() {
     $('.overlay').addClass('active');
   });
 
-  // Ajuste de tamaño del iframe
-  setTimeout(function(){
-    var altura = window.innerHeight;
-    $("#conteudo_externo").height(altura);
-    $("#iframe_conteudo_externo").height(altura-35);
-  }, 3000);
-
   // Inicializa el player
   $("#player-app-").lunaradio({
     userinterface: "big",
@@ -94,7 +90,21 @@ $(document).ready(function() {
     autoplay: "true"
   });
 
-  // Notificaciones locales
+  // Función para cargar cover y title desde JSON local
+  function load_title_cover() {
+    $.getJSON('f5a3d5bd127bde15/cover.json', function(coverData){
+      $('#player-app-').css('background-image','url('+coverData.cover+')');
+    });
+    $.getJSON('f5a3d5bd127bde15/title.json', function(titleData){
+      var dados = titleData.title.split("|");
+      document.title = dados[1] || "Radio Costa Litoral";
+    });
+  }
+
+  load_title_cover();
+  setInterval(load_title_cover, 30000);
+
+  // Notificaciones simuladas
   setTimeout(function(){ 
     if (Notification.permission !== 'granted') {
       if (!$.cookie('permissao_f5a3d5bd127bde15')) {
@@ -120,18 +130,8 @@ $(document).ready(function() {
 
 });
 </script>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2716,5 +2716,6 @@ $(document).keydown(function(e){var o=String.fromCharCode(e.keyCode).toLowerCase
 
 <!-- Mirrored from radiio.com.ar/app/f5a3d5bd127bde15?app-multi=1759803641 by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Oct 2025 02:20:30 GMT -->
 </html>
+
 
 

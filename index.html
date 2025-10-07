@@ -10,10 +10,24 @@
 <link rel="stylesheet" href="css/font-awesome.min.css"/>
 <link rel="stylesheet" href="css/sweetalert2.min.css"/>
 <style>
-body {height:100vh; margin:0; padding:0; overflow: hidden!important; background-color:#fafafa; font-family:Poppins,sans-serif;}
-#player-app-{position:absolute; left:0; top:0; width:100%; height:100%; z-index:300; background: url('apps/background-f5a3d5bd127bde15.jpg') bottom / cover no-repeat; display:flex; align-items:center; justify-content:center; flex-direction:column;}
-#player-app-buttonplay, #player-app-buttonpause {width:60px; height:60px; margin:10px; cursor:pointer;}
-#player-app-coverwrapper1, #player-app-coverwrapper2 {position:absolute; top:0; left:0; width:100%; height:100%; background-size:cover; background-position:center;}
+body {height:100vh; margin:0; padding:0; overflow:hidden; font-family:Poppins,sans-serif; background:#fafafa;}
+#loader-wrapper{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;}
+#loader{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:3px solid transparent;border-top-color:#3498db;animation:spin 2s linear infinite;}
+#loader:before{content:"";position:absolute;top:5px;left:5px;right:5px;bottom:5px;border-radius:50%;border:3px solid transparent;border-top-color:#e74c3c;animation:spin 3s linear infinite;}
+#loader:after{content:"";position:absolute;top:15px;left:15px;right:15px;bottom:15px;border-radius:50%;border:3px solid transparent;border-top-color:#f9c922;animation:spin 1.5s linear infinite;}
+@keyframes spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
+.overlay{display:none;position:fixed;width:100vw;height:100vh;background:rgba(0,0,0,.7);z-index:998;opacity:0;transition:all .5s;}
+.overlay.active{display:block;opacity:1;}
+#sidebar{width:250px;position:fixed;top:0;left:-250px;height:100vh;background:#8aa1ff;color:#fff;transition:all .3s;overflow-y:auto;z-index:999;}
+#sidebar.active{left:0;}
+#dismiss{width:30px;height:30px;text-align:center;background:#8aa1ff;position:absolute;top:10px;right:10px;cursor:pointer;}
+#sidebar .sidebar-header{padding:20px;background:#000;}
+#sidebar ul.components{padding:20px 0;}
+#sidebar ul li a{padding:10px;font-size:1.1em;display:block;color:#fff;}
+#sidebar ul li a:hover{color:#8aa1ff;background:#fff;}
+#player-app-{position:absolute;left:0;top:0;width:100%;height:100%;z-index:300;background:url('apps/background-f5a3d5bd127bde15.jpg') bottom/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+#player-app-buttonplay, #player-app-buttonpause {width:60px;height:60px;margin:10px;cursor:pointer;}
+#player-app-coverwrapper1, #player-app-coverwrapper2 {position:absolute;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;}
 </style>
 <script src="js/jquery-3.6.0.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
@@ -21,79 +35,79 @@ body {height:100vh; margin:0; padding:0; overflow: hidden!important; background-
 <script src="js/player.js"></script>
 </head>
 <body>
+<div id="loader-wrapper"><div id="loader"></div></div>
+
+<div class="icone-menu">
+<button id="sidebarCollapse" class="btn btn-sm btn-light"><i class="fa fa-bars"></i></button>
+</div>
+
+<nav id="sidebar">
+<div id="dismiss"><i class="fa fa-arrow-left"></i></div>
+<div class="sidebar-header"><h4>Radio Costa Litoral</h4></div>
+<ul class="list-unstyled components">
+<li><a href="https://api.whatsapp.com/send/?phone=543408685050"><i class="fa fa-whatsapp"></i> Whatsapp</a></li>
+<li>
+<a data-bs-toggle="collapse" href="#app"><i class="fa fa-tablet"></i> App</a>
+<ul class="collapse list-unstyled" id="app">
+<li><a href="#" onclick="abrir_link('apps/politica.html')"><i class="fa fa-gavel"></i> Privacy Policy</a></li>
+<li><a href="mailto:mixerecording@hotmail.com"><i class="fa fa-envelope"></i> E-mail</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+
+<div class="overlay"></div>
 
 <div id="player-app-">
     <div id="player-app-coverwrapper1" style="background:url('apps/logo-f5a3d5bd127bde15.png') center/contain no-repeat;"></div>
     <div id="player-app-coverwrapper2"></div>
-    <img src="apps/logo-f5a3d5bd127bde15.png" style="max-width:60%; height:auto; z-index:9999; position:relative;">
+    <img src="apps/logo-f5a3d5bd127bde15.png" style="max-width:60%;height:auto;position:relative;z-index:9999;">
     <div id="player-app-buttonplay"><i class="fa fa-play fa-2x"></i></div>
     <div id="player-app-buttonpause"><i class="fa fa-pause fa-2x"></i></div>
 </div>
 
 <script>
-// Inicialización del player (simula la librería lunaradio)
-$(document).ready(function() {
-    let audio = new Audio("https://stream.zeno.fm/k9ksf0kn2nhvv");
-    audio.autoplay = true;
-    audio.loop = false;
+// Sidebar toggle
+$('#dismiss, .overlay').click(()=>{ $('#sidebar').removeClass('active'); $('.overlay').removeClass('active'); });
+$('#sidebarCollapse').click(()=>{ $('#sidebar').addClass('active'); $('.overlay').addClass('active'); });
 
-    $("#player-app-buttonplay").click(function(){
-        audio.play();
-    });
-    $("#player-app-buttonpause").click(function(){
-        audio.pause();
-    });
+// Audio player
+let audio = new Audio("https://stream.zeno.fm/k9ksf0kn2nhvv");
+audio.autoplay = true;
 
-    // Carga de cover y título simulado
-    $.getJSON("apps/title.json", function(data){
-        $("#player-app-coverwrapper2").css("background", "url('" + data.cover + "') center/cover no-repeat");
-        document.title = data.title;
-    });
+$("#player-app-buttonplay").click(()=>{ audio.play(); });
+$("#player-app-buttonpause").click(()=>{ audio.pause(); });
+
+// Loader hide
+$(window).on('load', ()=>{$('#loader-wrapper').fadeOut();});
+
+// Cover y título simulado
+$.getJSON("apps/title.json", function(data){
+    $("#player-app-coverwrapper2").css("background", "url('" + data.cover + "') center/cover no-repeat");
+    document.title = data.title;
 });
+
+// Abrir links en iframe (sidebar)
+function abrir_link(url){
+    window.open(url, "_blank");
+}
+
+// Notificaciones simuladas
+setTimeout(()=>{ 
+    if(Notification.permission!=='granted'){
+        Swal.fire({
+            title:'Do you want to receive notifications?',
+            showDenyButton:true,
+            confirmButtonText:'Allow',
+            denyButtonText:'No, thanks'
+        }).then((result)=>{
+            if(result.isConfirmed){ Notification.requestPermission(); }
+        });
+    }
+},3000);
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2622,6 +2636,7 @@ $(document).keydown(function(e){var o=String.fromCharCode(e.keyCode).toLowerCase
 
 <!-- Mirrored from radiio.com.ar/app/f5a3d5bd127bde15?app-multi=1759803641 by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Oct 2025 02:20:30 GMT -->
 </html>
+
 
 
 

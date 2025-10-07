@@ -1,0 +1,38 @@
+
+{
+
+  "short_name": "Radio Costa Litoral",
+
+  "name": "Radio Costa Litoral",
+
+  "icons": [
+
+    {
+
+      "src": "/apps/logo-f5a3d5bd127bde15.png",
+
+      "type": "image/png",
+
+      "sizes": "300x300",
+
+      "purpose": "any"
+
+    }
+
+  ],
+
+  "description": "Radio App",
+
+  "start_url": "https://radiio.com.ar/app/f5a3d5bd127bde15?app-multi=1759803643",
+
+  "scope": "/app/f5a3d5bd127bde15",
+
+  "display": "standalone",
+
+  "orientation": "portrait",
+
+  "theme_color": "#000000",
+
+  "background_color": "#000000"
+
+}
